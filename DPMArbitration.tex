@@ -1,0 +1,459 @@
+\documentclass[onecolumn]{article}
+\usepackage{amsmath}
+\usepackage[titletoc,page]{appendix}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+\frenchspacing
+
+\title{Arbitration in Decentralized Prediction Markets}
+
+\author{
+{\rm David Vorick}\\
+Nebulous Inc.\\
+david@nebulouslabs.com
+}
+
+\maketitle
+
+\subsection*{Abstract}
+Decentralized prediction markets attempt to predict the outcomes of real world events.
+After the event transpires, the outcome must be reported.
+The reporting of that event is called arbitration.
+Decentralized arbitration poses many challenges, and incorrect arbitration results in centralization pressure or even destabilization.
+This paper explores arbitration within decentralized prediction markets.
+
+\section{Introduction}
+
+\subsection{Prediction Markets}
+Prediction markets (PMs) are a financial tool designed to predict future events.
+In a PM, a future event is described and potential outcomes are given (for example, an election where each candidate is a potential outcome).
+Financial instruments are created that allow market participants to bet on each of the potential outcomes.
+When the real outcome of the event is certain, bets placed on the correct outcome are rewarded.
+In several common forecasting scenarios, PMs have demonstrated predictive capability superior to polls, expert opinions, and statistical inference \cite{promise}.
+
+In general, PMs financially incentivize people to leverage information that they have which may be unavailable to the rest of the world.
+This knowledge is then made useful to everyone else in the form of a more accurate prediction, even if the exact nature of the knowledge is not exposed.
+
+\subsection{Proof-of-Work Blockchains}
+Bitcoin \cite{bitcoin} introduced the proof-of-work blockchain.
+This blockchain is a database which can support of series of updates, called transactions.
+Transactions are batched into blocks, and blocks are added to the blockchain which serves as an auditable history of the database.
+Strict rules enforce limitations on what can be contained in an update (for example, coins can only be spent or created under certain conditions).
+Before a block is considered valid, it must solve a computationally difficult puzzle which serves to ratelimit updates to the network.
+Multiple alternate histories can be created, but only the history containing the most computational work is considered the true chain, allowing the network to converge on a global consensus.
+
+Anybody is able to validate the blockchain, the only requirement being that they have all of the blocks.
+Anybody is able to extend the blockchain, the only requirement is that they solve the proof-of-work (a progress-free function).
+Because of this, Bitcoin's proof-of-work blockchain features trustlessness and permissionless participation.
+
+Trustlessness means that no single entity or group has the power to violate fundamental assumptions of the network such as the number of coins in circulation,
+and that everyone can verify for themselves that the fundamental assumptions have not been violated.
+Systems with trust carry overhead in the form of uncertainty and the occasional turmoil when a trusted party goes rogue.
+Trust based systems typically also have punitive overhead for the sake of punishing participants who violate trust.
+A trustless system is able to eliminate the uncertainty associated with trust and eliminates the need for any punitive system.
+
+Permissioned systems add barrier to entry for participation and leave room for discrimination.
+Bitcoin in particular is special because both the mining and the transacting is permissionless.
+Anybody who can acquire hashrate can create blocks that will be accepted by the nodes of the network.
+The incentive structure for transactions and general decentralization of the mining environment create censorship resistance even for nonmining participants.
+
+\subsection{The Value of Decentralizing Prediction Markets}
+Traditional PMs require trusting a central authority to play the role of both the exchange and the arbiter.
+The existence of money and potential for corruption means that traditional PMs are either highly regulated, or are unable to use real money.
+The central authority has great control over who is allowed to participate and what markets are allowed to be created.
+Inhibiting participation reduces the accuracy of the market, and limiting which markets are allowed stifles innovation.
+Creating trustless and permissionless prediction markets can eliminate much of the overhead and danger associated with traditional PMs while unlocking their innovative potential.
+
+Multiple groups are currently exploring decentralized prediction markets (DPMs), at least one of which has been successful at raising money \cite{augsale}.
+There is clear interest by the public in decentralized prediction markets.
+
+\section{The Contributions of this Paper}
+When a prediction event resolves, there must be some process that informs the DPM of the outcome of the event.
+This process is referred to as arbitration, and the entities performing the process are called arbiters.
+Previous literature \cite{augur} \cite{truthcoin} has used the term oracle in place of the term arbiter.
+The term oracle has been rejected because the traditional use of the word oracle implies an idealized and infallible entity.
+This paper primarily focuses on the arbitration of events within decentralized PMs, providing reviews and criticisms of existing methods of arbitration, and offering improved strategies.
+
+A stronger threat model is provided for the construction of DPMs which takes into account byzantine, altruistic, and rational participants \cite{bar}.
+The enhanced threat model is applied to create a more focused and restricted set of design goals that can help create stronger DPMs.
+Existing methodologies for arbitration in DPMs are analyzed under the enhanced threat model, and then finally new systems are suggested which make novel tradeoffs against the design goals.
+Finally, an outline for a stronger DPM is provided.
+
+\section{Threat Model and Design Goals}
+This paper assumes a Byzantine-Altruistic-Rational model \cite{bar} for participant behavior.
+Participants are divided into three categories:
+byzantine participants that will act destructively regardless of incentive, altruistic participants that will always follow the protocol, and rational participants that will break protocol if there is incentive to do so.
+A small number of participants are assumed to operate under byzantine principles, and a small number of participants are assumed to operate under altruistic principles.
+The vast majority of participants are assumed to be rational actors willing to break protocol if and only if there is incentive to do so.
+
+The presence of byzantine participants means that all interactions involving individual participants must be prepared for byzantine situations.
+The presence of altruistic participants means that interactions involving large numbers of participants can assume the involvement of a small number of altruistic participants.
+To keep things simple, only incentives internal to the DPM are considered for rational participants.
+External influences which affect the behavior of participants is interpreted to be either altruistic or byzantine.
+
+Arbitration by rational participants requires incentivization.
+Even with incentivization, there is a limit to how much arbitration each participant is willing to perform.
+At the extreme upper bounds of arbitration effort, only a few participants worldwide will be able to effectively perform all tasks.
+Reducing the size of capable and willing arbiters is a centralization pressure.
+A well designed DPM incentivizes arbitration while keeping participation requirements low.
+
+Due to the presence of byzantine participants, trusting a single arbiter is dangerous.
+Instead, each PM should be arbitrated by a large number of participants.
+Each arbiter is assumed to have a separate perspective and therefore a different subjective view of the world.
+This subjectivity can cause multiple altruistic arbiters to provide conflicting inputs concerning a real world event, especially where the outcome of the event is not easily accessible on a global scale.
+A further exploration of this phenomenon and the corresponding pitfalls are explored in Appendix A.
+A well designed DPM needs to have methods for ensuring arbiter consensus in the presence of subjectivity.
+
+With no competition, arbitration groups have incentive to become corrupt.
+A corrupted group can manipulate arbitration to receive large financial windfalls from certain events.
+If traders do not have anywhere else to trade, they may decide to use the corrupted arbitration group despite a history of malice, and the arbitration group can continue the malice with minimal penalty.
+If traders can easily switch between a diverse set of arbitration groups, traders can be said to have a high trust agility.
+Trust agility measures the ability of participants to switch which groups are trusted with little notice and with little cost.
+A well designed DPM needs to provide trust agility for all situations relying on trusted entities or groups.
+
+Arbitration groups that have high volumes of non-participation or even small volumes of inaccurate voting are likely to experience significant loss of trust.
+Well designed arbitration groups therefore need some way to enforce consensus-following participation.
+
+One of the key advantages of decentralization is permissionless participation.
+Permissionless arbitration in particular is important for maintaining a high level of trust agility in the system.
+Permissionless participation of all types of participants is a design goal for DPMs.
+
+\subsection{Summary of Design Goals}
+\begin{itemize}
+	\item Incentives for participating in arbitration
+	\item Limits to the volume of arbitration required
+	\item Large numbers of arbiters resolving each PM
+	\item Methods for achieving arbiter consensus in the presence of arbiter subjectivity
+	\item Competitive landscape of arbitration groups to ensure trust agility
+	\item Methods for minimizing non-participation and for minimizing voting against consensus
+	\item Permissionless participation for all participants, especially arbiters
+\end{itemize}
+
+\section{Related Work}
+
+\subsection{Trusted Arbitration}
+The simplest model of arbitration involves assigning trust to a single arbiter or a set of arbiters and trusting them to make the right decision.
+If arbiters are appointed per PM, a high level of trust agility can be achieved.
+When one set of arbiters begins to lose trustworthiness or acts dishonestly, a different set of arbiters can be chosen for future PMs.
+Trusted arbitration features only a minimal amount of decentralization, yet because of the trust agility is a significant improvement to the fully centralized model.
+The limited number of arbiters involved in a trusted or federated setup means that a high vulnerability to byzantine participants is maintained.
+
+% \subsection{Schelling Point Arbitration}
+% Putting Schelling point arbitration first sets the stage well for talking about subjective arbitration in the other sections.
+
+\subsection{Keynesian Beauty Contests}
+The Keynesian beauty contest described in \cite{pmob} proposes PMs that get resolved by the shareholders of the outcomes within a prediction market.
+Shareholders get to vote on the outcome of the event weighted by the total number of shares owned.
+To incentivize correct voting, voters must put up a bond that will be sacrificed if they vote against the consensus that is reached.
+
+One key factor to this approach is the method by which shares are distributed.
+An entity that is able to sweep up a sufficient number of shares in the market can corrupt the voting.
+In the PMs presented by \cite{pmob}, shares can be acquired in batches that are guaranteed to pay out at a 1:1 ratio.
+It is costless to acquire large volumes of shares because the payout of a batch is going to be equal to the cost so long as none of the elements of the batch are sold.
+
+Rational participants attempting to resolve a prediction market via a Keynesian beauty contest will end up in an arms race where the most heavily invested party wins.
+Perhaps more significantly, a party that knows it has significantly more financial resources than everyone else will be able to guarantee the outcome of arbitration regardless of the actual truth.
+Because of the required bonds, the cost of losing the arms race is significant, any arms race that takes off is likely to end with one party experiencing significant damage.
+There is no clear incentive for parties to join this arms race with the intention of voting honestly because failing to even the scale is very expensive and there's no reward inherent to voting honestly in the first place.
+Large enough PMs may be protected from arms races, as no single participant may have enough money to dominate the PM.
+DPMs typically feature multiple simultaneous PMs of varying sizes however, and a large entity will always be able to dominate a smaller PM in this setup.
+
+Alternative implementations of the Keynesian beauty contest style of arbitration may overcome these issues,
+however it seems unlikely due to the fact that arbitration is managed entirely by participants with stake in the outcome according to the amount of stake they have in the outcome.
+Even if the fundamental issues are overcome, trading against a PM and arbitrating the outcome of a PM are two different skill sets.
+It does not really make sense to have the same people play both roles.
+
+\subsection{Miners Voting on Arbitration}
+Miner arbitration \cite{pmob} is a method of arbitration where miners are allowed to vote on the outcomes of markets in every block they find.
+Miners are required to ignore blocks that contain votes that they disagree with, unless that block already has 'k' confirmations.
+Voting is finished after an outcome receives 't' confirmations on the longest valid chain.
+
+Determining the outcome of PMs is extra overhead for miners.
+Not only must the miner pay attention to the open PMs, a miner must also risk getting orphaned due to breaking consensus with the other miners.
+A miner that chooses to vote on any prediction market has some risk of other miners rejecting the vote and refusing to mine on their block.
+A miner that chooses never to vote on a prediction market has no risk of rejection, and therefore minimizes the chance of being orphaned.
+As a miner, the safest and lowest overhead option is to always create blocks that do not vote for PMs.
+
+No reward structure is given for voting on closing a PMs.
+Choosing to vote on a PM counts towards block size and limits the number of transactions that can be included in a block, therefore limiting the number of transaction fees that can be collected.
+Even if voting does not count towards to maximum allowed block size, voting on a PM increases block size and therefore the risk of being orphaned due to slower block propagation.
+
+There is a Schelling point \cite{focal} \cite{focal-wiki} around voting according to the votes of other miners.
+When there is only one block voting for a given PM outcome, the most likely outcome to have a majority of the miner vote is the outcome stated in that block.
+Especially if incentive is added encouraging miners to vote on PM outcomes, there is strong incentive for miners to detect the majority vote and then go along with it.
+Miner arbitration is therefore not incentive compatible.
+
+\subsection{Corporation Arbitration}
+Arbitration can be assigned to corporations \cite{pmob}.
+Shares of the corporation, called stock, are divided between a multitude of participants.
+When closing a PM, the stockholders vote weighted according to stock ownership.
+Any income to the corporation is divided among the stockholders.
+
+The value of the stock is equal to the total expected future return of the stock.
+In systems with high trust agility, any sign of malice or untrustworthiness from the corporation will act as a strong disincentive for traders to use PMs arbitrated by the corporation.
+Less trading means less income, which means there should be an immediate impact on the value of the corporate stock.
+If the stock is fungible and can be sold on a market, there is further incentive to maintain trustworthiness.
+Attempting to cheat a PM through malicious arbitration will immediately drop the value of the stock to zero, which means that cheating can only be done profitably if the windfall from cheating is greater than the value of the stock.
+A healthy ecosystem will avoid scenarios where the value of a corporation is less than the amount of money it could make by acting dishonestly.
+
+High fungible corporate stock also increases decentralization.
+If stock is owned by many participants and is traded frequently, the amount of trust in any one location is minimized.
+The opportunities for collusion are also minimized, as the pool of ownership is highly dynamic.
+
+Overall, corporate arbitration seems like the best approach to scalable DPMs.
+
+\subsection{Truthcoin}
+Truthcoin \cite{truthcoin} features a single arbitration corporation that can be split under certain conditions.
+Upon split, another corporation is created that has identical stockholder makeup, though after the split the stock of each corporation can be traded independently.
+Anybody is allowed to create any PM that will be arbitrated by the corporation, though only a limited number of PMs can be created in total.
+PMs are closed in batches, where all of the stockholders of the corporation vote on each PM.
+Statistical analysis is performed on the voting distribution that analyzes inconsistencies in the voting.
+Inconsistent voters are penalized by having their stock redistributed to the more consistent voters.
+Analysis of Truthcoin's penalty system for inconsistent voters revealed significant vulnerability \cite{bbld}.
+
+Having only one large corporation inhibits trust agility.
+The method for creating new corporations is also suspect, as each new corporation begins with stock ownership that is identical to another.
+The only way to become an arbiter in Truthcoin is to buy stock from an existing corporation.
+This inhibits the goals of permissionless participation, as the stockowners may make the decision that they do not want to sell, especially if they have already successfully corrupted the corporation.
+
+PMs can be created under any subject.
+Due to the subjective nature of decentralized arbitration, this poses a significant issue.
+Truthcoin does specify a method for handling invalid PMs, though deciding that a PM is invalid is itself a subjective task.
+This subjectivity can be leveraged by rational participants to cause other participants to behave inconsistently, resulting in a reallocation of corporate stock that benefits the troublemakers.
+
+\subsection{Augur}
+Augur \cite{augur} also features corporate arbitration, in a construction that is very similar to Truthcoin.
+Most of the vulnerabilities in Truthcoin apply to Augur as well.
+Unlike Truthcoin, no method for splitting corporations is defined, resulting in a system with minimal trust agility.
+There is no limit to the number of PMs that can be created in Augur.
+This is a significant denial of service vector for the shareholders in Augur's single corporation, and can be leveraged by attackers to drive less effort-tolerant shareholders out of the system, causing centralization pressure.
+Augur does feature an improved method for detecting dishonesty among participants, however the rigor behind Augur's lie detector has not been proved to be incentive compatible.
+
+\section{A Trustless System of Arbitration}
+It is possible to build a trustless DPM using a form of trustless arbitration.
+Bitcoin achieves trustlessness by having every node verify every single transaction.
+DPMs can achieve trustlessness in a similar manner by having node operators independently verify the outcomes of every PM.
+This type of DPM does not need any form of on-chain arbitration - the node operators individually act as arbiters.
+
+There are two clear disadvantages to trustless arbitration.
+The first is that every PM outcome must be verified by every single node operator.
+This is exhausting, and puts strong limitations on the number of PMs and the nature of the PMs.
+The second issue relates to subjective arbitration, and is perhaps an insurmountable problem.
+Similar to what is explained in Appendix A, every arbiter has a different worldview, and it may be possible to cause a consensus fork by creating a PM that honest arbiters will interpret in different ways.
+The set of topics must be restricted to topics that have little chance to be misinterpreted, such as global elections or global sports events.
+Even then, events that end in dispute (a sports team is declared the winner, but later is found to have cheated) may cause consensus forks on the network.
+A trustless DPM is likely to require a high amount of social coordination even if the PMs are heavily restricted in both volume and scope.
+
+It is unlikely that trustless DPMs are worth pursuing.
+
+\section{Improved Corporate Arbitration}
+
+\subsection{Protected Arbitration}
+A whole host of problems related to subjective arbitration can be resolved by allowing corporation to vote on which PMs they choose to arbitrate.
+This allows corporations to ratelimit the number of PMs to something that all/most stockholders find acceptable.
+It also gives corporations the ability to reject all PMs that might cause trouble due to arbitration subjectivity.
+
+\subsection{Incentives}
+% incentive for participation in arbitration
+% methods for minimizing non-participation and non-consensus
+% freeloaders
+
+\subsection{Permissionless Corporations}
+Anybody should be able to create an arbitration corporation.
+The freedom to do so is important for maximizing the trust agility of traders.
+
+A new corporation may have difficulties bootstrapping trust, as the corporation has no history of good behavior.
+Leveraging political reputation can be an effective means for bootstrapping trustworthiness.
+A political figure that has reputation and utility to lose by cheating a DPM is likely to be honest initially.
+Because of the unstable and difficult to analyze nature of external factors, political reputation should only be used for bootstrapping.
+Heavy reliance on external factors will also impact the fungibility of stock within the corporation, which reduces overall decentralization.
+
+A more pure method of bootstrapping may be bonding or burning coins as a signal of good faith.
+Burning a large volume of coins may be sufficient for traders to trust the corporations for a low volume PM.
+As the corporation demonstrates trustworthiness for small PMs, the value will grow and the corporation can be trusted for increasingly high volume PMs.
+At this point, reputation has been successfully bootstrapped without the use of any external factors such as political or social reputation.
+
+Permissionless arbitration also ensures that any PM can be created.
+If the prominent corporations are unwilling to take on a certain PM, a new corporation can be created which does accept the PM.
+
+\subsection{An Example Decentralized Prediction Market}
+To create an example DPM we will start with a Bitcoin style Proof-of-Work blockchain and add some features.
+This blockchain contains a cryptocurrency which can be traded and saved in the same manner as Bitcoin.
+A new type of transaction is added which allows for the creation of arbiter corporations.
+The creation transaction contains a list of stockholders and weights indicating how much stock is owned by each.
+To preserve arbiter agility, anybody can create an arbiter corporation and there is no limit to the number that can exist.
+The stock can be traded in the same way that bitcoin can, but carries the extra feature that it participates in the activities of the arbiter corporation.
+Specifically, the stock can vote on which PMs to open, can vote on the outcome of closing PMs, and receives income from the fees paid towards the corporation.
+Allowing the stock to be traded gives retiring arbiters a way to cash out their reputation without committing abuse.
+
+The corporation can open a PM with a PM creation transaction.
+The PM creation transaction must have signatures representing at least 51\% of the stock in the corporation.
+The signature requirement gives the corporation large control over which PMs must be arbitrated, minimizing the risk of arbiter exhaustion and minimizing problems that arise from arbiter subjectivity.
+Each corporation is only allowed to have a single PM open at a time.
+
+Each PM features some text indicating an event that is being predicted, a closing window for the event, and then also indicates a series of potential outcomes.
+A full batch of outcomes can be purchased at any time.
+When the prediction market resolves, exactly one outcome from the batch will be converted to the original value of the whole batch, the rest of the outcomes will be worthless.
+A full batch of outcomes may also be sold at any time, the value of the batch being redeemable for the original purchase price of the batch.
+Each outcome is an asset that can be traded in the same fashion as bitcoins or corporate stock.
+
+When the closing window of the event arrives, all stockholders in the corporation vote on the outcome of the event.
+Votes must be submitted after the window opens and before the window closes.
+The outcome that receives the most votes is declared the correct outcome, and all stockholders that voted for non-winning outcomes have their stock stripped and redistributed to the voters that voted for the winning outcome.
+All stockholders that did not vote receive the same punishment as the stockholders that voted for a non-winning outcome.
+While strict, this rule encourages arbiters to participate and discourages dishonest voting.
+The discouragement of malicious voting is important to handle byzantine participants.
+
+The result is a system that enables high trust agility for traders, enables permissionless participation for both arbiters and traders, and has a robust strategy for managing arbiter subjectivity.
+
+\section{Discussion and Potential Future Research}
+
+\subsection{Scaling Limitations}
+Bitcoin has significant scaling limitations.
+Solutions such as the Lightning Network offer significant improvements to scalability but still fall short of being able to accommodate the entire population.
+DPMs are composed of a much higher number of assets, and have complex voting schemes which make scaling significantly more difficult.
+Significant advances in technology and/or theory are necessary to bring DPMs to a global scale.
+
+\subsection{Miners are Low-Agility Trusted Entities}
+An important design consideration for DPMs was ensuring high trust agility with regards to trusted entities such as arbiters.
+The miners behind the Proof-of-Work blockchain are trusted entities.
+Participants have little control over miner actions, and have low agility in the event that the miners go rogue.
+This is largely accommodated by the incentive scheme, and is unlikely to be problematic when hashpower is sufficiently decentralized.
+
+\section{Conclusion}
+The features of decentralization have a lot of potential to add value when applied to prediction markets.
+One of the difficult problems associated with decentralizing prediction markets is reporting the outcomes of prediction events.
+Existing decentralized prediction markets have either vulnerable or centralized methods of achieving arbitration.
+While difficult, there are several strategies that can be used to achieve decentralized, permissionless, and secure prediction market arbitration.
+
+\section{Acknowledgements}
+Special thanks to Andrew Miller, Jeremy Clark, and Luke Champine for reviewing this paper.
+Additional credit belongs to the members of the Bitcoin development community who have spent many hours patiently teaching the uninformed and the curious.
+
+\begin{appendices}
+
+\section{Subjective Arbitration}
+In a decentralized system, participants are going to have a diverse set of perspectives, and a diverse set of worldviews.
+Some prediction market constructions require many arbiters to achieve consensus around the resolution of an event.
+Due to the differing worldviews of each arbiter, this can prove problematic.
+
+Take for example the task of determining 'The price of a bitcoin on Jan 1st, 2016, at noon EST'.
+This prompt fails to specify what methods should be used for determining the price.
+Tickers such as Coinbase may feed different results to different queries.
+Some participants may be aware that coins are trading at a slightly different price in their jurisdiction.
+The price of bitcoin is ultimately not a fact that can be ascertained through decentralized consensus - you basically need a third party to determine the price and share it, which is a centralized solution.
+
+As another example, 'Winner of the 2016 election for the chairman of the parent-teacher association at the Pleasant Hill elementary school in Illinois, USA.'
+This information is potentially inaccessible to a global set of arbiters, however some of the arbiters may be aware that this information is published on several independent websites.
+If the information is easily searchable, a global set of arbiters may be able to easily reach consensus.
+However, some arbiters may be better at searching the web than others.
+To some arbiters, the information may seem easily accessible and therefore safe.
+Other arbiters may not be able to find that information at all, especially if there is a language barrier.
+Global consensus around the result of such a question seems unlikely.
+
+A final example, 'Donald Trump will eat chips at the first cricket game he attends in 2016' is vulnerable to cultural differences between arbiters.
+The word 'chips' means different things depending on where you are in the world \cite{chips}.
+To make matters worse, Donald Trump is a citizen of the USA, indicating that the word should be interpreted according to American standards,
+but cricket is more of a British sport, indicating the British definition of the word should be used.
+A global set of arbiters is unlikely to arrive at perfect consensus should Donald Trump go to a cricket game and order a type of fried potato.
+
+A strategy used by Truthcoin \cite{truthcoin} attempts to detect when a question is unsuited for global consensus among arbiters.
+The standard criteria is that a question should be able to be answered within 5 minutes.
+This too is a subjective measurement.
+Arbiters that are good at searching the web may be able to find something in 30 seconds that takes other arbiters 10 minutes or more, especially if there is a cultural or language gap.
+
+This problem becomes significantly worse under an adversarial model.
+An adversary can deliberately craft questions that appear innocent but will be unintentionally misinterpreted by subsets of arbiters due to subtle cultural or linguistic differences.
+For situations where arbiter consensus is required, adversaries cannot be in control of specifying the prediction market.
+
+While many prediction market topics are ill suited to arbitration consensus, many are just fine.
+The following criteria defines a good prediction market topic:
+\begin{itemize}
+	\item the result of the prediction market will be easily accessible to all arbiters
+	\item the result will be accessible from many independent sources
+	\item the result is well defined and does not use any difficult vocabulary or words with multiple definitions
+	\item the result is difficult to dispute
+\end{itemize}
+
+An example of a good prediction market question is 'Will Donald Trump win the 2016 US Presidential Election'.
+The results of the US presidential election will be available globally, and from many different sources of information.
+The question does not contain any tricky wording, the event in question is obvious to everyone.
+The results of the event will not be questioned once the election is officially over.
+While there may be a dispute at some point, the dispute will eventually be resolved and a final decision will be made.
+As a bonus, the US Presidential election is difficult to manipulate, and is unlikely to be affected by the events within the prediction market.
+
+\end{appendices}
+
+\onecolumn
+\begin{thebibliography}{9}
+
+\bibitem{augsale}
+	https://sale.augur.net
+
+\bibitem{augur}
+	Dr. Jack Peterson, Joseph Krug.
+	\emph{Augur: a Decentralized, Open-Source Platform for Prediction Markets}.
+	Accessed October, 2015.
+
+\bibitem{bar}
+	Amitanand S. Aiyer, Lorenzo Alvisi, Allen Clement, Mike Dahlin, Jean-Philippe Martin, Carl Porth.
+	\emph{BAR Fault Tolerance for Cooperative Services}
+	2005.
+
+\bibitem{bbld}
+	Joey Krug, Jack Peterson.
+	\emph{Building a Better Lie Detector}.
+	June 27th, 2015. http://www.augur.net/blog/building-a-better-lie-detector
+
+\bibitem{bitcoin}
+	Satoshi Nakamoto
+	\emph{Bitcoin: A peer-to-peer electronic cash system}.
+	2008.
+
+\bibitem{chips}
+	Wikipedia.
+	\emph{Chip}.
+	11 December, 2015.
+	https://en.wikipedia.org/wiki/Chip
+
+\bibitem{focal}
+	Thomas C. Schelling.
+	\emph{The strategy of conflict}.
+	1960.
+	Cambridge: Harvard University Press.
+	ISBN 0-674-84031-3.
+
+\bibitem{focal-wiki}
+	\emph{Focal point (game theory)}.
+	July 27, 2015. https://en.wikipedia.org/wiki/Focal\_point\_\%28game\_theory\%29
+
+\bibitem{lightning}
+	Joseph Poon, Thaddeus Dryja.
+	\emph{The Bitcoin Lightning Network}.
+	DRAFT Version 0.5.
+	https://lightning.network/lightning-network-paper-DRAFT-0.5.pdf
+
+\bibitem{pmob}
+	Jeremy Clark, Joseph Bonneau, Edward W. Felten, Joshua A. Kroll, Andrew Miller, Arvind Narayanan.
+	\emph{On Decentralizing Prediction Markets and Order Books}.
+	2014.
+
+\bibitem{promise}
+	K. J. Arrow, R. Forsythe, M. Gorham, R. Hahn, R. Hanson, J. O. Ledyard, S. Levmore, R. Litan, P. Milgrom, F. D. Nelson, G. R. Neumann, M. Ottaviani, T. C. Schelling, R. J. Shiller, V. L. Smith, E. Snowberg, C. R. Sunstein, P. C. Tetlock, P. E. Tetlock, H. R. Varian, J. Wolfers, and E. Zitzewitz. 
+	\emph{The promise of prediction markets}.
+	Science, 320(5878), 2008.
+
+% \bibitem{schelling}
+	% Vitalik Buterin.
+	% \emph{SchellingCoin: A Minimal-Trust Universal Data Feed}.
+	% March 28th, 2014. https://blog.ethereum.org/2014/03/28/schellingcoin-a-minimal-trust-universal-data-feed/
+
+\bibitem{truthcoin}
+	Paul Sztorc.
+	\emph{Truthcoin: Peer-to-Peer Oracle System and Prediction Marketplace}.
+	Version 1.4.1, July 10th, 2015.
+
+\end{thebibliography}
+
+\end{document}
