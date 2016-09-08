@@ -1,32 +1,3 @@
-
-PASTEBIN
-new paste
-trends API tools faq
- 
-Guest User
--
-Public Pastes
-
-    Untitled2 sec ago
-    Untitled5 sec ago
-    Untitled8 sec ago
-    Untitled11 sec ago
-    Rhetorical Situati...12 sec ago
-    dr tier list17 sec ago
-    Untitled18 sec ago
-    Untitled20 sec ago
-
- 
-Pastebin PRO Accounts SUMMER SPECIAL! For a limited time only get 40% discount on a LIFETIME PRO account! Offer Ends Soon!
-SHARE
-TWEET
-Untitled
-a guest Sep 8th, 2016 0 Never
-AD-BLOCK DETECTED - Please Support Pastebin By Buying A PRO Account
-For only $2.95 you can unlock loads of extra features, and support Pastebin's development at the same time.
-pastebin.com/pro
-rawdownloadcloneembedreportprint text 10.62 KB
-
 # Construction
  
 It will be easiest for me to explain Jute by starting with Bitcoin-style consensus and modifying it. And the first change to make is to allow blocks to have multiple parents. This changes our 'chain' into a directed acyclic graph, or 'rope' (also called a braid or a tangle). A block can have multiple parents, but no parent can be an ancestor of another parent. Banning ancestor inclusion is not strictly necessary, but makes implementation easier. Turning the blockchain into a rope means that multiple blocks can be mined in parallel, and then later merged into the chain. In Bitcoin style consensus, when two blocks are mined with the same parent, one will definitely become an orphan. By allowing a child block to point to multiple parents, we can enable both blocks to be included in the chain, meaning that both may be able to get block rewards.
@@ -156,7 +127,3 @@ We start with a DAG, where each block has different transactions. Block 'D' has 
 As a side note, this breaks naive SPV, because a transaction is able to be added to the blockchain even though it is invalid. We are however able to easily restore SPV with some additional modifications that will be explained later.
 
 Following these rules, assuming no transaction fees, and assuming that no miners ever have any blocks orphaned, the payouts are fair and are independent of hashrate or network connectivity. The safety of miners is closely related to the maximum allowed block gap. As a reminder, the gap is the difference between a block's relative height and its absolute height. Longer allowed gaps mean greater protection against being orphaned, but also mean that an adversary has more opportunity to do long-range reorgs, which means confirmation times must be higher.
-create new paste  /  dealsnew!  /  api  /  trends  /  syntax languages  /  faq  /  tools  /  privacy  /  cookies  /  contact  /  dmca  /  advertise on pastebin  /  scraping  /  go
-Site design & logo © 2016 Pastebin; user contributions (pastes) licensed under cc by-sa 3.0 -- Dedicated Server Hosting by Steadfast
-My Alerts
-Top
